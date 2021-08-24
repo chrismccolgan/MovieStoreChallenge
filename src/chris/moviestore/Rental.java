@@ -1,4 +1,4 @@
-package moviestore;
+package chris.moviestore;
 
 public class Rental {
 

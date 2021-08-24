@@ -1,4 +1,4 @@
-package moviestore;
+package chris.moviestore;
 
 import org.junit.jupiter.api.Test;
 
