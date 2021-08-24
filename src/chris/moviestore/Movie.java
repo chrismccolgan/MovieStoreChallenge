@@ -15,12 +15,12 @@ public class Movie {
   }
 
   public int getPriceCode() {
-    return price.priceCode();
+    return price.getPriceCode();
   }
 
-  public void setPriceCode(int priceCode) {
-    price = new Price(priceCode);
-  }
+//  public void setPriceCode(int priceCode) {
+//    price = new Price(priceCode);
+//  }
 
   public String getTitle() {
     return title;

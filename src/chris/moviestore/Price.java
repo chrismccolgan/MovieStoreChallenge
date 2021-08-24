@@ -1,5 +1,6 @@
 package chris.moviestore;
 
+// price logic moved from customer into its own class
 public class Price {
   private int priceCode;
 
@@ -7,13 +8,13 @@ public class Price {
     this.priceCode = priceCode;
   }
 
-  public int priceCode() {
+  public int getPriceCode() {
     return priceCode;
   }
 
   public double amount(int daysRented) {
     double thisAmount = 0;
-    switch (priceCode()) {
+    switch (getPriceCode()) {
       case Movie.REGULAR:
         thisAmount += 2;
         if (daysRented > 2)
