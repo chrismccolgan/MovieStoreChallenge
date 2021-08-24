@@ -5,61 +5,92 @@ import java.util.List;
 
 public class Customer {
 
-  private String _name;
-  private List<Rental> _rentals = new ArrayList<Rental>();
+  private String name;
+  private List<Rental> rentals = new ArrayList<Rental>();
 
   public Customer(String name) {
-    _name = name;
+    this.name = name;
   }
 
   public void addRental(Rental arg) {
-    _rentals.add(arg);
+    rentals.add(arg);
   }
 
   public String getName() {
-    return _name;
+    return name;
   }
 
   public String statement() {
+    String result = header(getName());
+
+    for (Rental rental : rentals) {
+      double thisAmount = amount(rental);
+      result += lineItem(rental, thisAmount);
+    }
+
+    double totalAmount = totalAmount(this.rentals);
+    int frequentRenterPoints = frequentRenterPoints(this.rentals);
+
+    // add footer lines
+    result += footer(totalAmount, frequentRenterPoints);
+
+    return result;
+  }
+
+  private double totalAmount(List<Rental> rentals) {
     double totalAmount = 0;
+    for (Rental rental : rentals) {
+      //determine amounts for rental line
+      double thisAmount = amount(rental);
+
+      // show figures for this rental
+      totalAmount += thisAmount;
+    }
+    return totalAmount;
+  }
+
+  private double amount(Rental rental) {
+    double thisAmount = 0;
+    switch (rental.getMovie().getPriceCode()) {
+      case Movie.REGULAR:
+        thisAmount += 2;
+        if (rental.getDaysRented() > 2)
+          thisAmount += (rental.getDaysRented() - 2) * 1.5;
+        break;
+      case Movie.NEW_RELEASE:
+        thisAmount += rental.getDaysRented() * 3;
+        break;
+      case Movie.CHILDRENS:
+        thisAmount += 1.5;
+        if (rental.getDaysRented() > 3)
+          thisAmount += (rental.getDaysRented() - 3) * 1.5;
+        break;
+    }
+    return thisAmount;
+  }
+
+  private int frequentRenterPoints(List<Rental> rentals) {
     int frequentRenterPoints = 0;
-    String result = "Rental Record for " + getName() + "\n";
-
-    for (Rental each : _rentals) {
-      double thisAmount = 0;
-
-      //determine amounts for each line
-      switch (each.getMovie().getPriceCode()) {
-        case Movie.REGULAR:
-          thisAmount += 2;
-          if (each.getDaysRented() > 2)
-            thisAmount += (each.getDaysRented() - 2) * 1.5;
-          break;
-        case Movie.NEW_RELEASE:
-          thisAmount += each.getDaysRented() * 3;
-          break;
-        case Movie.CHILDRENS:
-          thisAmount += 1.5;
-          if (each.getDaysRented() > 3)
-            thisAmount += (each.getDaysRented() - 3) * 1.5;
-          break;
-      }
-
-      // add frequent renter points
+    for (Rental each : rentals) {
       frequentRenterPoints++;
       // add bonus for a two day new release rental
       if ((each.getMovie().getPriceCode() == Movie.NEW_RELEASE) && each.getDaysRented() > 1)
         frequentRenterPoints++;
-
-      // show figures for this rental
-      result += "\t" + each.getMovie().getTitle() + "\t" + String.valueOf(thisAmount) + "\n";
-      totalAmount += thisAmount;
     }
+    return frequentRenterPoints;
+  }
 
-    // add footer lines
-    result += "Amount owed is " + String.valueOf(totalAmount) + "\n";
-    result += "You earned " + String.valueOf(frequentRenterPoints) + " frequent renter points";
+  private String header(String name) {
+    return "Rental Record for " + name + "\n";
+  }
 
-    return result;
+  private String lineItem(Rental rental, double thisAmount) {
+    return "\t" + rental.getMovie().getTitle() + "\t" + thisAmount + "\n";
+  }
+
+  private String footer(double totalAmount, int frequentRenterPoints) {
+    String footer1 = "Amount owed is " + totalAmount + "\n";
+    String footer2 =  "You earned " + frequentRenterPoints + " frequent renter points";
+    return footer1 + footer2;
   }
 }
